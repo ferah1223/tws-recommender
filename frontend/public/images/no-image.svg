@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Tidak ada gambar">
+  <rect width="200" height="200" fill="#f1f5f9"/>
+  <g fill="none" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="100" cy="92" r="34"/>
+    <path d="M70 92a30 30 0 0 1 60 0v22a10 10 0 0 1-10 10h-6V100h12"/>
+    <path d="M70 92v22a10 10 0 0 0 10 10h6V100H74"/>
+  </g>
+  <text x="100" y="160" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="13" fill="#64748b">Gambar tidak tersedia</text>
+</svg>

@@ -1,74 +1,100 @@
 import Link from "next/link";
-import { Headphones, ArrowUpRight } from "lucide-react";
+import { Github, Mail, Heart } from "lucide-react";
 
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/recommend", label: "Rekomendasi" },
-  { href: "/about", label: "Tentang Sistem" },
+  { href: "/product", label: "Katalog" },
+  { href: "/faq", label: "FAQ" },
 ];
 
-const techStack = ["Next.js", "FastAPI", "MongoDB", "Tailwind CSS"];
+const socials = [
+  { href: "https://github.com", label: "GitHub", icon: Github },
+  { href: "mailto:hello@tws-recommender.app", label: "Email", icon: Mail },
+];
 
 export default function Footer() {
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="border-t border-slate-100 bg-white">
-      <div className="mx-auto max-w-6xl px-6 py-14">
-        <div className="grid gap-12 md:grid-cols-[1.4fr_0.8fr_1fr]">
-          {/* Brand */}
+    <footer className="relative overflow-hidden bg-slate-950 text-slate-300">
+      {/* Decorative violet glow */}
+      <div className="pointer-events-none absolute -top-24 left-1/3 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-violet-600/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 right-0 h-72 w-72 rounded-full bg-violet-700/10 blur-3xl" />
+      {/* Subtle grid pattern */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+        }}
+      />
+
+      {/* ── Main row: brand · nav · socials ───────────────────────── */}
+      <div className="relative mx-auto max-w-6xl px-6 pt-7 pb-5">
+        <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
+          {/* Tagline block */}
           <div>
-            <Link href="/" className="inline-flex items-center gap-3 group">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-white transition group-hover:bg-violet-700">
-                <Headphones className="h-5 w-5" strokeWidth={1.5} />
-              </div>
-              <span className="text-sm font-semibold text-slate-900">
-                TWS Recommender
-              </span>
-            </Link>
-
-            <p className="mt-5 max-w-xs text-sm leading-7 text-slate-400">
-              Sistem rekomendasi berbasis preferensi pengguna untuk membantu
-              memilih True Wireless Stereo sesuai kebutuhan.
+            <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-violet-400 animate-pulse" />
+              Audio Match Engine
             </p>
-
-            {/* CTA mini */}
+            <p className="mt-1.5 max-w-sm text-xs leading-5 text-slate-400">
+              Membantu Anda memilih TWS yang paling sesuai dengan preferensi audio.
+            </p>
           </div>
 
-          {/* Navigation */}
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-              Navigasi
-            </p>
-            <div className="mt-5 flex flex-col gap-3">
-              {navLinks.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="group inline-flex items-center gap-1 text-sm text-slate-500 transition hover:text-violet-700"
-                >
-                  <span className="inline-block transition-transform group-hover:translate-x-1">
-                    {item.label}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
+          {/* Nav inline */}
+          <nav className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            {navLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-xs font-medium text-slate-400 transition-colors duration-300 hover:text-white"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
 
-          {/* Tech Stack */}
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-              Teknologi
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {techStack.map((tech) => (
-                <span
-                  key={tech}
-                  className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
+          {/* Socials */}
+          <div className="flex items-center gap-2">
+            {socials.map(({ href, label, icon: Icon }) => (
+              <a
+                key={label}
+                href={href}
+                aria-label={label}
+                target={href.startsWith("http") ? "_blank" : undefined}
+                rel={href.startsWith("http") ? "noreferrer" : undefined}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-400 transition-all duration-300 hover:-translate-y-0.5 hover:border-violet-400/40 hover:bg-violet-500/10 hover:text-white"
+              >
+                <Icon className="h-[14px] w-[14px]" strokeWidth={1.75} />
+              </a>
+            ))}
           </div>
+        </div>
+      </div>
+
+      {/* ── Divider ─────────────────────────────────────────────── */}
+      <div className="relative mx-auto max-w-6xl px-6">
+        <span className="block h-px w-full bg-linear-to-r from-transparent via-white/10 to-transparent" />
+      </div>
+
+      {/* ── Bottom bar ─────────────────────────────────────────── */}
+      <div className="relative mx-auto max-w-6xl px-6 py-3.5">
+        <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
+            © {year} TWS Recommender
+            <span className="mx-2 text-slate-700">·</span>
+            <span className="text-slate-400">All rights reserved</span>
+          </p>
+
+          <p className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
+            Built with
+            <Heart className="h-2.5 w-2.5 fill-violet-400 text-violet-400" />
+            in Indonesia
+          </p>
         </div>
       </div>
     </footer>

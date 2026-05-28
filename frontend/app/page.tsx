@@ -1,272 +1,319 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
 import {
   Headphones,
-  Sparkles,
   AudioWaveform,
   BatteryFull,
   ShieldCheck,
   Gamepad2,
-  SlidersHorizontal,
-  Star,
   ArrowUpRight,
 } from "lucide-react";
-
-const features = [
-  {
-    icon: AudioWaveform,
-    title: "Preferensi Lebih Personal",
-    desc: "Pilih karakter suara, fitur, dan kebutuhan utama untuk hasil rekomendasi yang lebih relevan.",
-  },
-  {
-    icon: Sparkles,
-    title: "Rekomendasi Lebih Cerdas",
-    desc: "Sistem memanfaatkan Content-Based Filtering untuk mencocokkan preferensi pengguna dengan spesifikasi produk.",
-  },
-  {
-    icon: SlidersHorizontal,
-    title: "Informasi Jelas & Ringkas",
-    desc: "Setiap hasil menampilkan skor kecocokan dan gambaran spesifikasi penting secara mudah dipahami.",
-  },
-];
 
 const criteria = [
   {
     icon: AudioWaveform,
     title: "Karakter Suara",
-    desc: "Bass, balance, atau detail treble sesuai selera mendengarmu.",
-    color: "from-violet-500 to-purple-600",
-    bg: "bg-violet-50",
+    desc: "Pilih preferensi suara Anda — bass yang kuat, treble yang detail, atau seimbang di seluruh frekuensi.",
   },
   {
     icon: BatteryFull,
     title: "Daya Tahan Baterai",
-    desc: "Pilih TWS untuk aktivitas harian, kerja, atau penggunaan panjang.",
-    color: "from-emerald-400 to-teal-500",
-    bg: "bg-emerald-50",
+    desc: "Sesuaikan dengan kebutuhan pemakaian harian, perjalanan jauh, hingga penggunaan intensif.",
   },
   {
     icon: ShieldCheck,
-    title: "Fitur ANC",
-    desc: "Temukan produk dengan peredam bising aktif untuk pengalaman lebih fokus.",
-    color: "from-rose-400 to-pink-500",
-    bg: "bg-rose-50",
+    title: "Active Noise Cancellation",
+    desc: "Kurangi kebisingan sekitar saat bekerja, berkomuter, atau menikmati musik dengan tenang.",
   },
   {
     icon: Gamepad2,
     title: "Mode Gaming",
-    desc: "Cocok untuk pengguna yang membutuhkan latensi rendah saat bermain.",
-    color: "from-amber-400 to-orange-500",
-    bg: "bg-amber-50",
+    desc: "Latensi rendah agar audio tetap sinkron saat bermain game maupun menonton video.",
   },
 ];
 
 const steps = [
   {
     number: "01",
-    title: "Isi Preferensi",
-    desc: "Masukkan kebutuhan utama seperti suara, baterai, ANC, gaming, dan budget.",
+    title: "Tentukan Preferensi",
+    desc: "Pilih karakter suara, daya tahan baterai, dan fitur pendukung sesuai kebutuhan Anda.",
   },
   {
     number: "02",
-    title: "Sistem Menganalisis",
-    desc: "Metode Content-Based Filtering menghitung tingkat kecocokan tiap produk.",
+    title: "Proses Pencocokan",
+    desc: "Sistem menghitung tingkat kecocokan preferensi Anda terhadap spesifikasi tiap produk.",
   },
   {
     number: "03",
-    title: "Lihat Hasil Terbaik",
-    desc: "Dapatkan rekomendasi TWS lengkap dengan skor dan ringkasan keunggulan produk.",
+    title: "Tinjau Rekomendasi",
+    desc: "Telusuri produk paling sesuai beserta ringkasan spesifikasi dan alasan rekomendasinya.",
   },
 ];
 
+const sampleResults = [
+  { name: "Sony WF-1000XM5", tag: "Balance · ANC" },
+  { name: "Bose QuietComfort Ultra", tag: "Balance · ANC" },
+  { name: "Anker Soundcore Liberty 4 NC", tag: "Bass · ANC" },
+];
+
+// ── Animated Counter (counts up when in view) ──
+function AnimatedCounter({
+  value,
+  duration = 1400,
+}: {
+  value: number;
+  duration?: number;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (!isInView) return;
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.floor(eased * value));
+      if (progress < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [isInView, value, duration]);
+
+  return <span ref={ref}>{display}</span>;
+}
+
+// ── Animation presets ──
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const } },
+};
+
+const stagger = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+};
+
 export default function HomePage() {
   return (
-    <>
-      <main className="font-body relative min-h-screen bg-white text-slate-900 overflow-hidden">
+    <div className="font-body relative bg-white text-slate-900 overflow-hidden">
         {/* ── HERO ── */}
-        <section className="relative grid-pattern">
-          {/* Gradient overlay over grid */}
+        <section className="relative grid-pattern flex min-h-[calc(100vh-72px)] items-center">
           <div className="absolute inset-0 bg-linear-to-br from-white via-white/95 to-violet-50/80 pointer-events-none" />
+          <div className="absolute -top-24 left-1/4 h-80 w-80 rounded-full bg-violet-200/25 blur-2xl pointer-events-none" />
 
-          {/* Decorative blobs */}
-          <div className="absolute top-20 -left-20 h-72 w-72 rounded-full bg-violet-200/40 blur-3xl pointer-events-none" />
-          <div className="absolute top-10 right-10 h-56 w-56 rounded-full bg-fuchsia-200/30 blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-1/2 h-40 w-96 rounded-full bg-purple-100/60 blur-2xl pointer-events-none" />
-
-          <div className="relative mx-auto grid max-w-6xl gap-12 px-6 pt-24 pb-20 md:grid-cols-2 md:items-center lg:gap-16">
+          <div className="relative mx-auto grid max-w-6xl gap-10 px-6 pt-10 pb-12 md:grid-cols-2 md:items-center lg:gap-14">
             {/* Left */}
-            <div>
+            <motion.div
+              initial="hidden"
+              animate="show"
+              variants={stagger}
+            >
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-[11px] font-semibold uppercase tracking-widest text-violet-600">
+              <motion.div
+                variants={fadeUp}
+                className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-700 backdrop-blur-sm"
+              >
                 <span className="h-1.5 w-1.5 rounded-full bg-violet-500 animate-pulse" />
-                Sistem Rekomendasi TWS
-              </div>
+                Content-Based Filtering
+              </motion.div>
 
               {/* Headline */}
-              <h1 className="font-display mt-6 text-4xl leading-[1.15] tracking-tight text-slate-950 md:text-5xl lg:text-6xl">
-                Temukan TWS yang
-                <span className="block italic text-shimmer">paling cocok</span>
-                untuk kebutuhanmu
-              </h1>
+              <motion.h1
+                variants={fadeUp}
+                className="font-display mt-5 text-[2.25rem] leading-[1.08] text-slate-950 md:text-[2.75rem] lg:text-[3rem]"
+              >
+                Temukan TWS yang sesuai dengan preferensi Anda.
+              </motion.h1>
 
-              <p className="mt-6 text-base leading-8 text-slate-500 max-w-md">
-                Sistem ini membantu pengguna menemukan produk True Wireless
-                Stereo terbaik berdasarkan kecocokan spesifikasi dengan
-                preferensi pribadi — suara, baterai, ANC, hingga gaming.
-              </p>
+              <motion.p
+                variants={fadeUp}
+                className="mt-4 max-w-md text-[15px] leading-7 text-slate-600"
+              >
+                Sistem rekomendasi berbasis preferensi audio dan kebutuhan
+                teknis Anda, dicocokkan dengan spesifikasi setiap produk
+                dalam basis data.
+              </motion.p>
 
               {/* CTA */}
-              <div className="mt-8 flex flex-wrap items-center gap-3">
+              <motion.div variants={fadeUp} className="mt-7 flex flex-wrap items-center gap-3">
                 <Link
                   href="/recommend"
-                  className="group inline-flex items-center gap-2 rounded-full bg-slate-950 px-6 py-3 text-sm font-medium text-white transition-all hover:bg-violet-700 hover:gap-3"
+                  className="group inline-flex items-center gap-2 rounded-full bg-violet-700 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-violet-600/20 transition-all hover:bg-violet-800 hover:gap-3"
                 >
                   Mulai Rekomendasi
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </Link>
                 <Link
-                  href="/about"
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-6 py-3 text-sm font-medium text-slate-700 transition hover:border-violet-300 hover:text-violet-700"
+                  href="#cara-kerja"
+                  className="group inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-6 py-3 text-sm font-medium text-slate-700 backdrop-blur-sm transition-all hover:border-violet-300 hover:text-violet-700 hover:shadow-[0_0_0_4px_rgba(139,92,246,0.08)]"
                 >
-                  Pelajari Sistem
+                  <span className="underline decoration-violet-300 decoration-2 underline-offset-4 group-hover:decoration-violet-500">
+                    Pelajari Cara Kerja
+                  </span>
                 </Link>
-              </div>
+              </motion.div>
 
-              {/* Social proof strip */}
-              <div className="mt-10 flex items-center gap-6 border-t border-slate-100 pt-6">
-                <div>
-                  <p className="font-display text-2xl text-slate-900">50+</p>
-                  <p className="text-xs text-slate-400 mt-0.5">Produk TWS</p>
-                </div>
-                <div className="h-8 w-px bg-slate-200" />
-                <div>
-                  <p className="font-display text-2xl text-slate-900">4</p>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Kriteria Penilaian
-                  </p>
-                </div>
-                <div className="h-8 w-px bg-slate-200" />
-                <div>
-                  <p className="font-display text-2xl text-slate-900">CBF</p>
-                  <p className="text-xs text-slate-400 mt-0.5">Metode AI</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Right — Hero Visual */}
-            <div className="relative flex items-center justify-center">
-              {/* Main card */}
-              <div className="relative w-full max-w-sm rounded-[2.5rem] border border-slate-200/80 bg-white/90 p-8 shadow-[0_30px_80px_-20px_rgba(109,40,217,0.25)] backdrop-blur-sm">
-                {/* Floating tags */}
-                <div className="absolute -top-4 -left-4 rounded-2xl border border-violet-100 bg-white px-4 py-2.5 shadow-lg">
-                  <p className="text-[9px] font-semibold uppercase tracking-widest text-slate-400">
-                    Metode
-                  </p>
-                  <p className="mt-0.5 text-sm font-semibold text-slate-900">
-                    CBF Matching
-                  </p>
-                </div>
-                <div className="absolute -top-2 -right-4 rounded-2xl border border-slate-100 bg-white px-4 py-2.5 shadow-lg">
-                  <p className="text-[9px] font-semibold uppercase tracking-widest text-slate-400">
-                    Akurasi
-                  </p>
-                  <p className="mt-0.5 text-sm font-semibold text-violet-600">
-                    Tinggi
-                  </p>
-                </div>
-                <div className="absolute -bottom-4 -right-3 rounded-2xl bg-slate-950 px-4 py-2.5 shadow-lg">
-                  <p className="text-[9px] font-semibold uppercase tracking-widest text-white/50">
-                    Output
-                  </p>
-                  <p className="mt-0.5 text-sm font-semibold text-white">
-                    Lebih Terarah
-                  </p>
-                </div>
-
-                {/* Center icon */}
-                <div className="mx-auto flex h-40 w-40 items-center justify-center rounded-full bg-linear-to-br from-violet-500 via-purple-500 to-fuchsia-600 animate-float animate-pulse-ring shadow-2xl shadow-violet-300/40">
-                  <div className="flex h-28 w-28 items-center justify-center rounded-full bg-white/20">
-                    <Headphones
-                      className="h-14 w-14 text-white"
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                </div>
-
-                {/* Match score bar */}
-                <div className="mt-6 rounded-2xl bg-slate-50 px-4 py-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-medium text-slate-500">
-                      Skor Kecocokan
-                    </span>
-                    <span className="text-xs font-bold text-violet-600">
-                      94%
-                    </span>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-slate-200">
-                    <div className="h-1.5 w-[94%] rounded-full bg-linear-to-r from-violet-500 to-fuchsia-500" />
-                  </div>
-                  <p className="mt-2 text-[11px] text-slate-400">
-                    Berdasarkan preferensimu
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── FEATURES ── */}
-        <section className="mx-auto max-w-6xl px-6 py-16">
-          <div className="grid gap-4 md:grid-cols-3">
-            {features.map((item, i) => (
-              <div
-                key={item.title}
-                className="card-hover group relative rounded-3xl border border-slate-100 bg-white p-6 shadow-sm"
+              {/* Social proof strip with animated counters */}
+              <motion.div
+                variants={fadeUp}
+                className="mt-7 flex items-center gap-6 border-t border-slate-100 pt-5"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white group-hover:bg-violet-600 transition-colors duration-300">
-                  <item.icon className="h-5 w-5" strokeWidth={1.5} />
+                <div>
+                  <p className="font-display text-2xl text-slate-900">
+                    <AnimatedCounter value={100} />
+                    <span className="text-violet-600">+</span>
+                  </p>
+                  <p className="mt-0.5 text-xs text-slate-500">Produk TWS</p>
                 </div>
-                <h3 className="font-display mt-5 text-lg font-normal text-slate-900">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm leading-7 text-slate-500">
-                  {item.desc}
-                </p>
-                <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ArrowUpRight className="h-4 w-4 text-violet-400" />
+                <div className="h-8 w-px bg-slate-200" />
+                <div>
+                  <p className="font-display text-2xl text-slate-900">
+                    Top <span className="text-violet-600"><AnimatedCounter value={3} duration={900} /></span>
+                  </p>
+                  <p className="mt-0.5 text-xs text-slate-500">Rekomendasi</p>
+                </div>
+                <div className="h-8 w-px bg-slate-200" />
+                <div>
+                  <p className="font-display text-2xl text-violet-700">
+                    <AnimatedCounter value={7} duration={900} />
+                  </p>
+                  <p className="mt-0.5 text-xs text-slate-500">Parameter Preferensi</p>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Right — Hero Visual with stagger */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] as const }}
+              className="relative flex items-center justify-center"
+            >
+              <div className="relative w-full max-w-md rounded-3xl border border-slate-200/70 bg-white p-6 shadow-[0_30px_80px_-20px_rgba(124,58,237,0.18)]">
+                {/* Header */}
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-xs font-medium text-slate-500">
+                      Hasil rekomendasi
+                    </span>
+                  </div>
+                  <span className="rounded-full bg-violet-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-violet-700">
+                    Top 3
+                  </span>
+                </div>
+
+                {/* Items with stagger */}
+                <motion.ul
+                  initial="hidden"
+                  animate="show"
+                  variants={{
+                    hidden: {},
+                    show: { transition: { staggerChildren: 0.12, delayChildren: 0.5 } },
+                  }}
+                  className="space-y-2.5"
+                >
+                  {sampleResults.map((p, i) => (
+                    <motion.li
+                      key={p.name}
+                      variants={{
+                        hidden: { opacity: 0, x: 20 },
+                        show: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } },
+                      }}
+                      whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                      className={`flex items-center gap-3 rounded-2xl border bg-white p-3 transition-colors hover:border-violet-200 ${
+                        i === 0 ? "border-violet-200 shadow-[0_0_0_3px_rgba(139,92,246,0.08)]" : "border-slate-100"
+                      }`}
+                    >
+                      <span className={`flex h-10 w-10 flex-none items-center justify-center rounded-xl ${
+                        i === 0 ? "bg-violet-600 text-white" : "bg-violet-50 text-violet-700"
+                      }`}>
+                        <Headphones className="h-4 w-4" strokeWidth={1.75} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-slate-900">
+                          {p.name}
+                        </p>
+                        <p className="truncate text-xs text-slate-500">
+                          {p.tag}
+                        </p>
+                      </div>
+                      <span className="font-display text-sm text-slate-400">
+                        0{i + 1}
+                      </span>
+                    </motion.li>
+                  ))}
+                </motion.ul>
+
+                {/* Footer */}
+                <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+                  <p className="text-[11px] text-slate-500">
+                    Disesuaikan dengan preferensi
+                  </p>
+                  <span className="text-[11px] font-medium text-violet-700">
+                    Berdasarkan kemiripan
+                  </span>
                 </div>
               </div>
-            ))}
+            </motion.div>
           </div>
         </section>
 
         {/* ── CRITERIA ── */}
-        <section className="bg-slate-950 py-20">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="mb-12">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-400">
-                Kriteria Penilaian
-              </p>
-              <h2 className="font-display mt-3 text-3xl text-white md:text-4xl">
-                Faktor yang digunakan
-                <span className="block italic text-slate-400">
-                  dalam rekomendasi
-                </span>
-              </h2>
-              <p className="mt-4 max-w-xl text-sm leading-7 text-slate-400">
-                Sistem mempertimbangkan beberapa aspek utama agar hasil yang
-                muncul terasa lebih relevan dengan kebutuhan pengguna.
-              </p>
-            </div>
+        <section className="relative overflow-hidden bg-slate-950 py-24 md:py-28">
+          <div className="absolute -top-40 left-1/2 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-violet-600/15 blur-2xl pointer-events-none" />
+          <div className="relative mx-auto max-w-6xl px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={stagger}
+              className="mb-12 max-w-2xl"
+            >
+              <motion.h2
+                variants={fadeUp}
+                className="font-display text-[1.85rem] leading-tight text-white md:text-[2.25rem]"
+              >
+                Empat kriteria utama dalam penilaian rekomendasi.
+              </motion.h2>
+              <motion.p
+                variants={fadeUp}
+                className="mt-3 text-sm leading-7 text-slate-400"
+              >
+                Setiap preferensi dibandingkan dengan spesifikasi tiap produk,
+                didukung parameter pendukung seperti anggaran, ketahanan air,
+                dan codec audio untuk menyusun rekomendasi yang relevan.
+              </motion.p>
+            </motion.div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={{
+                hidden: {},
+                show: { transition: { staggerChildren: 0.1 } },
+              }}
+              className="grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4"
+            >
               {criteria.map((item) => (
-                <div
+                <motion.div
                   key={item.title}
-                  className="card-hover rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm hover:border-white/20"
+                  variants={fadeUp}
+                  className="group relative bg-slate-950 p-6 transition-colors hover:bg-slate-900"
                 >
-                  <div
-                    className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br ${item.color} text-white shadow-lg`}
-                  >
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-violet-500/20 bg-violet-500/10 text-violet-300 shadow-[0_0_24px_-4px_rgba(139,92,246,0.45)] transition-transform group-hover:scale-110">
                     <item.icon className="h-5 w-5" strokeWidth={1.5} />
                   </div>
                   <h3 className="mt-5 text-base font-semibold text-white">
@@ -275,98 +322,116 @@ export default function HomePage() {
                   <p className="mt-2 text-sm leading-6 text-slate-400">
                     {item.desc}
                   </p>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 
         {/* ── STEPS ── */}
-        <section className="relative bg-violet-50/50 py-20">
-          <div className="absolute inset-0 grid-pattern opacity-40 pointer-events-none" />
+        <section id="cara-kerja" className="relative py-24 md:py-28">
           <div className="relative mx-auto max-w-6xl px-6">
-            <div className="mb-12 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-500">
-                Cara Kerja
-              </p>
-              <h2 className="font-display mt-3 text-3xl tracking-tight text-slate-950 md:text-4xl">
-                Tiga langkah sederhana
-              </h2>
-              <p className="mt-4 text-sm leading-7 text-slate-500">
-                Hanya perlu beberapa menit untuk mulai menemukan TWS yang
-                sesuai.
-              </p>
-            </div>
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={stagger}
+              className="mb-10 max-w-2xl"
+            >
+              <motion.h2
+                variants={fadeUp}
+                className="font-display text-[1.85rem] text-slate-950 md:text-[2.25rem]"
+              >
+                Tiga langkah menuju rekomendasi terbaik.
+              </motion.h2>
+              <motion.p
+                variants={fadeUp}
+                className="mt-3 text-sm leading-7 text-slate-600"
+              >
+                Alur kerja sistem dari input preferensi hingga hasil
+                rekomendasi.
+              </motion.p>
+            </motion.div>
 
-            <div className="grid gap-6 md:grid-cols-3">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={{
+                hidden: {},
+                show: { transition: { staggerChildren: 0.12 } },
+              }}
+              className="grid gap-6 md:grid-cols-3"
+            >
               {steps.map((item, i) => (
-                <div key={item.number} className="relative">
-                  {/* Connector line */}
+                <motion.div
+                  key={item.number}
+                  variants={fadeUp}
+                  className="relative"
+                >
                   {i < steps.length - 1 && (
-                    <div className="absolute top-8 left-full z-10 hidden w-6 border-t-2 border-dashed border-violet-200 md:block" />
+                    <div className="absolute top-10 left-full z-10 hidden w-6 border-t-2 border-dashed border-violet-200 md:block" />
                   )}
-                  <div className="card-hover rounded-3xl border border-white bg-white p-6 shadow-sm">
+                  <div className="group h-full rounded-2xl border border-slate-200 bg-white p-7 transition-all hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_12px_32px_-12px_rgba(124,58,237,0.3)]">
                     <div className="flex items-center gap-3">
-                      <span className="font-display text-4xl text-violet-200">
+                      <span className="font-display text-4xl font-semibold text-violet-600 transition-colors group-hover:text-violet-700">
                         {item.number}
                       </span>
-                      <Star className="h-3 w-3 text-violet-300" />
+                      <span className="h-px flex-1 bg-linear-to-r from-violet-300 via-violet-200 to-transparent" />
                     </div>
                     <h3 className="font-display mt-4 text-xl text-slate-900">
                       {item.title}
                     </h3>
-                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                    <p className="mt-2 text-sm leading-6 text-slate-600">
                       {item.desc}
                     </p>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 
         {/* ── CTA ── */}
-        <section className="mx-auto max-w-6xl px-6 py-16">
-          <div className="relative overflow-hidden rounded-[2rem] bg-linear-to-br from-violet-600 via-purple-600 to-fuchsia-700 px-8 py-12 text-white md:px-14 md:py-14">
-            {/* Decorative shapes */}
-            <div className="absolute -top-12 -right-12 h-48 w-48 rounded-full bg-white/10" />
-            <div className="absolute -bottom-16 -left-8 h-48 w-48 rounded-full bg-white/5" />
-            <div className="absolute top-8 right-32 h-20 w-20 rounded-full bg-fuchsia-400/30" />
+        <section className="mx-auto max-w-6xl px-6 pt-8 pb-24 md:pb-28">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }}
+            className="relative overflow-hidden rounded-2xl bg-slate-950 px-8 py-14 md:px-14 md:py-16"
+          >
+            <div className="absolute -top-32 left-1/2 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-violet-600/20 blur-2xl pointer-events-none" />
 
-            <div className="relative z-10 flex flex-col justify-between gap-8 md:flex-row md:items-center">
-              <div className="max-w-lg">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-200">
-                  Mulai Sekarang
-                </p>
-                <h2 className="font-display mt-3 text-3xl leading-tight md:text-4xl">
-                  Temukan TWS pilihanmu hari ini
+            <div className="relative z-10 flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
+              <div className="max-w-xl">
+                <h2 className="font-display text-[1.85rem] leading-tight text-white md:text-[2.25rem]">
+                  Siap menemukan TWS yang tepat?
                 </h2>
-                <p className="mt-4 text-sm leading-7 text-violet-200">
-                  Gunakan sistem rekomendasi ini untuk mempercepat proses
-                  memilih produk yang paling sesuai dengan kebutuhan dan
-                  preferensimu.
+                <p className="mt-3 text-sm leading-7 text-slate-400">
+                  Tetapkan preferensi Anda untuk menerima rekomendasi yang
+                  sesuai dengan kebutuhan.
                 </p>
               </div>
 
-              <div className="flex flex-col gap-3 sm:flex-row md:flex-col md:items-start lg:flex-row">
+              <div className="flex flex-shrink-0 flex-wrap items-center gap-3 md:flex-nowrap">
                 <Link
                   href="/recommend"
-                  className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-violet-700 transition-all hover:bg-violet-50 hover:gap-3"
+                  className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-slate-950 transition-all hover:gap-3"
                 >
-                  Coba Sekarang
+                  Mulai Rekomendasi
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </Link>
                 <Link
-                  href="/about"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
+                  href="/product"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/5"
                 >
-                  Pelajari lebih lanjut
+                  Lihat Katalog
                 </Link>
               </div>
             </div>
-          </div>
+          </motion.div>
         </section>
-      </main>
-    </>
+    </div>
   );
 }

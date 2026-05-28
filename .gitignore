@@ -65,3 +65,10 @@ next-env.d.ts
 
 # vercel
 .vercel
+
+# ===== Thesis / dokumen pribadi =====
+bab1.txt
+panduan.txt
+generate_bab1_revisi.py
+read_docx.ps1
+scripts_thesis/

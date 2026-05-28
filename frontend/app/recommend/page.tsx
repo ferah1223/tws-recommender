@@ -1,14 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import {
-  Sparkles,
   SlidersHorizontal,
   AudioWaveform,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import PreferenceForm from "../../components/PreferenceForm";
 import RecommendationList from "../../components/RecommendationList";
+import { API_BASE_URL } from "../../lib/api";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
+  },
+};
 
 type Recommendation = {
   id: string;
@@ -42,13 +53,15 @@ export default function RecommendPage() {
     min_battery_hours: number;
     anc: boolean;
     gaming: boolean;
+    hires: boolean;
     budget: number;
+    water_resistance: "none" | "basic" | "sport";
   }) => {
     try {
       setLoading(true);
       setError("");
 
-      const response = await fetch("http://localhost:8000/recommend?top_n=3", {
+      const response = await fetch(`${API_BASE_URL}/recommend?top_n=3`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -71,86 +84,111 @@ export default function RecommendPage() {
   };
 
   return (
-    <main className="relative min-h-screen bg-[#fcfaff] text-slate-900">
-      {/* Background accents */}
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[480px] overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.18),transparent_30%),radial-gradient(circle_at_top_right,rgba(236,72,153,0.12),transparent_25%),linear-gradient(to_bottom,#faf5ff,#ffffff)]"
-      />
+    <main className="font-body relative min-h-screen bg-white text-slate-900">
+      {/* ── HERO ── */}
+      <section className="relative grid-pattern overflow-hidden border-b border-slate-100">
+        <div className="absolute inset-0 bg-linear-to-br from-white via-white/95 to-violet-50/80 pointer-events-none" />
+        <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full bg-violet-200/30 blur-3xl pointer-events-none" />
 
-      {/* Header / Intro */}
-      <section className="border-b border-white/40 bg-white/70">
-        <div className="mx-auto max-w-6xl px-4 py-10 md:py-12">
-          <div className="inline-flex items-center gap-2 rounded-full border border-fuchsia-200 bg-white/80 px-3.5 py-1.5 text-xs font-medium text-fuchsia-700 shadow-sm">
-            <Sparkles className="h-3.5 w-3.5" />
-            Halaman Rekomendasi
-          </div>
+        <div className="relative mx-auto max-w-6xl px-6 py-10 lg:px-10 lg:py-12">
+          <motion.div
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.08 } },
+            }}
+            className="max-w-2xl"
+          >
+            <motion.div
+              variants={fadeUp}
+              className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-700 backdrop-blur-sm"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-violet-500 animate-pulse" />
+              Halaman Rekomendasi
+            </motion.div>
 
-          <h1 className="mt-5 max-w-3xl text-3xl font-bold tracking-tight text-slate-950 md:text-3xl">
-            Temukan TWS yang tepat
-            <span className="bg-linear-to-r from-fuchsia-500 via-violet-500 to-purple-600 bg-clip-text text-transparent">
-              {" "}
-              untuk kamu
-            </span>
-          </h1>
+            <motion.h1
+              variants={fadeUp}
+              className="font-display mt-5 text-[2rem] leading-[1.1] text-slate-950 md:text-[2.5rem]"
+            >
+              Temukan TWS yang tepat{" "}
+              <span className="bg-linear-to-r from-violet-600 via-violet-500 to-purple-600 bg-clip-text text-transparent">
+                untuk Anda
+              </span>
+              .
+            </motion.h1>
 
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 md:text-base">
-            Isi preferensi sesuai kebutuhanmu, lalu sistem akan menganalisis dan
-            menampilkan rekomendasi TWS terbaik berdasarkan kecocokan fitur dan
-            spesifikasi produk.
-          </p>
+            <motion.p
+              variants={fadeUp}
+              className="mt-4 max-w-xl text-[15px] leading-7 text-slate-600"
+            >
+              Isi preferensi sesuai kebutuhan Anda, lalu sistem akan
+              menganalisis dan menampilkan rekomendasi TWS terbaik berdasarkan
+              kecocokan fitur dan spesifikasi produk.
+            </motion.p>
+          </motion.div>
         </div>
       </section>
 
-      {/* Content */}
-      <section className="mx-auto max-w-6xl px-4 py-10 md:py-12">
+      {/* ── CONTENT ── */}
+      <section className="mx-auto max-w-6xl px-6 py-10 lg:px-10 lg:py-12">
         <div className="grid gap-6 lg:grid-cols-[390px_1fr]">
-          {/* Left panel */}
-          <div className="space-y-4">
-            <div className="rounded-[28px] border border-white/70 bg-white/85 p-6 shadow-[0_20px_60px_-30px_rgba(168,85,247,0.35)]">
-              <div className="flex items-start gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-fuchsia-100 to-violet-100 text-fuchsia-700">
-                  <SlidersHorizontal className="h-5 w-5" />
-                </div>
-
-                <div>
-                  <h2 className="text-lg font-semibold text-slate-900">
-                    Input Preferensi
-                  </h2>
-                  <p className="mt-1 text-sm leading-6 text-slate-600">
-                    Isi preferensi pengguna untuk mendapatkan rekomendasi TWS
-                    yang paling sesuai.
-                  </p>
-                </div>
+          {/* Left panel — Input */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] as const }}
+            className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_8px_24px_-12px_rgba(124,58,237,0.15)]"
+          >
+            <div className="flex items-start gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+                <SlidersHorizontal className="h-5 w-5" strokeWidth={1.75} />
               </div>
-
-              <div className="mt-6">
-                <PreferenceForm onSubmit={handleSubmit} loading={loading} />
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-violet-700">
+                  Langkah 1
+                </p>
+                <h2 className="font-display mt-1 text-lg text-slate-950">
+                  Input Preferensi
+                </h2>
               </div>
             </div>
-          </div>
 
-          {/* Right panel */}
-          <div className="space-y-4">
-            <div className="rounded-[28px] border border-white/70 bg-white/85 p-6 shadow-[0_20px_60px_-30px_rgba(168,85,247,0.25)]">
+            <div className="mt-6">
+              <PreferenceForm onSubmit={handleSubmit} loading={loading} />
+            </div>
+          </motion.div>
+
+          {/* Right panel — Results */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.2, ease: [0.22, 1, 0.36, 1] as const }}
+            className="space-y-4"
+          >
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_8px_24px_-12px_rgba(124,58,237,0.15)]">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white">
-                    <AudioWaveform className="h-5 w-5" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+                    <AudioWaveform className="h-5 w-5" strokeWidth={1.75} />
                   </div>
-
                   <div>
-                    <h2 className="text-lg font-semibold text-slate-900">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-violet-700">
+                      Langkah 2
+                    </p>
+                    <h2 className="font-display mt-1 text-lg text-slate-950">
                       Hasil Rekomendasi
                     </h2>
-                    <p className="mt-1 text-sm leading-6 text-slate-600">
-                      Menampilkan produk TWS terbaik berdasarkan preferensi yang
-                      dimasukkan.
+                    <p className="mt-1 text-sm leading-6 text-slate-500">
+                      Menampilkan produk TWS terbaik berdasarkan preferensi
+                      yang dimasukkan.
                     </p>
                   </div>
                 </div>
 
                 {!loading && recommendations.length > 0 && (
-                  <span className="rounded-full border border-fuchsia-200 bg-fuchsia-50 px-4 py-2 text-xs font-semibold text-fuchsia-700">
+                  <span className="rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-xs font-semibold text-violet-700">
                     {recommendations.length} produk ditampilkan
                   </span>
                 )}
@@ -158,33 +196,33 @@ export default function RecommendPage() {
             </div>
 
             {loading && (
-              <div className="rounded-[28px] border border-white/70 bg-white/85 p-8 text-center shadow-[0_20px_60px_-30px_rgba(168,85,247,0.25)]">
-                <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-fuchsia-100 border-t-fuchsia-600" />
-                <p className="font-semibold text-slate-900">
-                  Sedang memproses rekomendasi...
+              <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-[0_8px_24px_-12px_rgba(124,58,237,0.15)]">
+                <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-violet-600" />
+                <p className="font-display text-base text-slate-950">
+                  Sedang memproses rekomendasi…
                 </p>
-                <p className="mt-2 text-sm text-slate-500">
+                <p className="mt-2 text-sm leading-6 text-slate-500">
                   Sistem sedang menghitung produk yang paling sesuai dengan
-                  preferensimu.
+                  preferensi Anda.
                 </p>
               </div>
             )}
 
             {error && (
-              <div className="rounded-[28px] border border-red-200 bg-red-50 p-5 shadow-sm">
-                <h3 className="font-semibold text-red-700">
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-5">
+                <h3 className="font-display text-base text-red-700">
                   Terjadi Kesalahan
                 </h3>
-                <p className="mt-1 text-sm text-red-600">{error}</p>
+                <p className="mt-1 text-sm leading-6 text-red-600">{error}</p>
               </div>
             )}
 
             {!loading && !error && recommendations.length === 0 && (
-              <div className="rounded-[28px] border border-dashed border-slate-300 bg-white/70 p-10 text-center shadow-sm">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-fuchsia-50 text-fuchsia-600">
-                  <ChevronRight className="h-6 w-6" />
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+                  <ChevronRight className="h-6 w-6" strokeWidth={1.75} />
                 </div>
-                <h3 className="mt-4 text-lg font-semibold text-slate-900">
+                <h3 className="font-display mt-4 text-lg text-slate-950">
                   Belum ada rekomendasi
                 </h3>
                 <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
@@ -197,7 +235,7 @@ export default function RecommendPage() {
             {!loading && !error && recommendations.length > 0 && (
               <RecommendationList recommendations={recommendations} />
             )}
-          </div>
+          </motion.div>
         </div>
       </section>
     </main>
