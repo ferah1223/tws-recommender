@@ -66,6 +66,11 @@ next-env.d.ts
 # vercel
 .vercel
 
+# ===== Dataset & product assets =====
+tws.json
+frontend/public/images/*
+!frontend/public/images/no-image.svg
+
 # ===== Thesis / dokumen pribadi =====
 bab1.txt
 panduan.txt
