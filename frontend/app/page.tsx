@@ -10,28 +10,35 @@ import {
   ShieldCheck,
   Gamepad2,
   ArrowUpRight,
+  Zap,
+  ChevronRight,
+  Sparkles,
 } from "lucide-react";
 
 const criteria = [
   {
     icon: AudioWaveform,
     title: "Karakter Suara",
-    desc: "Pilih preferensi suara Anda — bass yang kuat, treble yang detail, atau seimbang di seluruh frekuensi.",
+    desc: "Bass yang kuat, treble yang detail, atau seimbang di seluruh frekuensi.",
+    gradient: "from-violet-500 to-purple-600",
   },
   {
     icon: BatteryFull,
     title: "Daya Tahan Baterai",
-    desc: "Sesuaikan dengan kebutuhan pemakaian harian, perjalanan jauh, hingga penggunaan intensif.",
+    desc: "Dari pemakaian harian hingga perjalanan jauh tanpa charge.",
+    gradient: "from-emerald-500 to-teal-600",
   },
   {
     icon: ShieldCheck,
     title: "Active Noise Cancellation",
-    desc: "Kurangi kebisingan sekitar saat bekerja, berkomuter, atau menikmati musik dengan tenang.",
+    desc: "Redam kebisingan sekitar untuk pengalaman audio yang fokus.",
+    gradient: "from-blue-500 to-indigo-600",
   },
   {
     icon: Gamepad2,
     title: "Mode Gaming",
-    desc: "Latensi rendah agar audio tetap sinkron saat bermain game maupun menonton video.",
+    desc: "Latensi rendah supaya audio tetap sinkron saat gaming.",
+    gradient: "from-amber-500 to-orange-600",
   },
 ];
 
@@ -39,24 +46,27 @@ const steps = [
   {
     number: "01",
     title: "Tentukan Preferensi",
-    desc: "Pilih karakter suara, daya tahan baterai, dan fitur pendukung sesuai kebutuhan Anda.",
+    desc: "Pilih karakter suara, ANC, gaming, budget, dan kebutuhan lainnya.",
+    icon: Sparkles,
   },
   {
     number: "02",
-    title: "Proses Pencocokan",
-    desc: "Sistem menghitung tingkat kecocokan preferensi Anda terhadap spesifikasi tiap produk.",
+    title: "Pencocokan Cerdas",
+    desc: "Cosine similarity membandingkan preferensi Anda dengan 141 produk.",
+    icon: Zap,
   },
   {
     number: "03",
-    title: "Tinjau Rekomendasi",
-    desc: "Telusuri produk paling sesuai beserta ringkasan spesifikasi dan alasan rekomendasinya.",
+    title: "Dapatkan Rekomendasi",
+    desc: "Lihat 3 produk terbaik beserta alasan kenapa cocok untuk Anda.",
+    icon: ChevronRight,
   },
 ];
 
 const sampleResults = [
-  { name: "Sony WF-1000XM5", tag: "Balance · ANC" },
-  { name: "Bose QuietComfort Ultra", tag: "Balance · ANC" },
-  { name: "Anker Soundcore Liberty 4 NC", tag: "Bass · ANC" },
+  { name: "Sony WF-1000XM5", tag: "Balance · ANC · LDAC", score: 96 },
+  { name: "Bose QuietComfort Ultra", tag: "Balance · ANC · aptX", score: 93 },
+  { name: "Soundcore Liberty 4 NC", tag: "Bass · ANC · LDAC", score: 89 },
 ];
 
 function AnimatedCounter({ value, duration = 1400 }: { value: number; duration?: number }) {
@@ -103,129 +113,150 @@ function FadeIn({ children, className = "", delay = 0, y = 24 }: { children: Rea
   );
 }
 
+function ScoreBadge({ score }: { score: number }) {
+  const color = score >= 90 ? "bg-emerald-500" : score >= 80 ? "bg-amber-500" : "bg-slate-400";
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-white ${color}`}>
+      {score}
+    </span>
+  );
+}
+
 export default function HomePage() {
   return (
     <div className="font-body relative overflow-hidden" style={{ background: "var(--background)", color: "var(--foreground)" }}>
-      {/* HERO */}
-      <section className="relative grid-pattern flex min-h-[calc(100vh-72px)] items-center">
-        <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(135deg, var(--background), color-mix(in srgb, var(--primary) 5%, var(--background)))" }} />
-        <div className="absolute -top-24 left-1/4 h-80 w-80 rounded-full blur-2xl pointer-events-none" style={{ background: "color-mix(in srgb, var(--primary) 15%, transparent)" }} />
 
-        <div className="relative mx-auto grid max-w-6xl gap-10 px-6 pt-10 pb-12 md:grid-cols-2 md:items-center lg:gap-14">
+      {/* ═══ HERO ═══ */}
+      <section className="relative min-h-[calc(100vh-72px)] flex items-center overflow-hidden">
+        {/* Aurora blobs */}
+        <div className="aurora-blob absolute top-[-10%] left-[15%] w-[500px] h-[500px] rounded-full opacity-30 pointer-events-none" style={{ background: "radial-gradient(circle, var(--primary), transparent 70%)" }} />
+        <div className="aurora-blob-2 absolute bottom-[-15%] right-[10%] w-[400px] h-[400px] rounded-full opacity-20 pointer-events-none" style={{ background: "radial-gradient(circle, #ec4899, transparent 70%)" }} />
+        <div className="aurora-blob-3 absolute top-[30%] right-[25%] w-[300px] h-[300px] rounded-full opacity-15 pointer-events-none" style={{ background: "radial-gradient(circle, #06b6d4, transparent 70%)" }} />
+        {/* Grid */}
+        <div className="absolute inset-0 grid-pattern opacity-30 pointer-events-none" />
+
+        <div className="relative mx-auto grid max-w-6xl gap-12 px-6 py-16 md:grid-cols-[1fr_420px] md:items-center lg:gap-16">
+          {/* Left */}
           <div>
             <FadeIn delay={0.1}>
-              <div className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] backdrop-blur-sm" style={{ borderColor: "color-mix(in srgb, var(--primary) 30%, transparent)", background: "color-mix(in srgb, var(--primary) 5%, var(--surface))", color: "var(--primary)" }}>
-                <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: "var(--primary)" }} />
+              <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ background: "color-mix(in srgb, var(--primary) 8%, var(--surface))", color: "var(--primary)", border: "1px solid color-mix(in srgb, var(--primary) 15%, transparent)" }}>
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60" style={{ background: "var(--primary)" }} />
+                  <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: "var(--primary)" }} />
+                </span>
                 Content-Based Filtering
               </div>
             </FadeIn>
 
             <FadeIn delay={0.2}>
-              <h1 className="font-display mt-5 text-[2.25rem] leading-[1.08] md:text-[2.75rem] lg:text-[3rem]" style={{ color: "var(--foreground)" }}>
-                Temukan TWS yang sesuai dengan <span style={{ color: "var(--primary)" }}>preferensi</span> Anda.
+              <h1 className="font-display mt-6 text-[clamp(2rem,5vw,3.25rem)] leading-[1.06] tracking-tight" style={{ color: "var(--foreground)" }}>
+                Temukan TWS yang<br />
+                <span className="gradient-text">tepat untuk Anda.</span>
               </h1>
             </FadeIn>
 
             <FadeIn delay={0.3}>
-              <p className="mt-4 max-w-md text-[15px] leading-7" style={{ color: "var(--muted)" }}>
-                Sistem rekomendasi berbasis preferensi audio dan kebutuhan teknis Anda, dicocokkan dengan spesifikasi setiap produk dalam basis data.
+              <p className="mt-5 max-w-lg text-[15px] leading-relaxed" style={{ color: "var(--muted)" }}>
+                Sistem menganalisis preferensi audio Anda lalu mencocokkannya dengan 141 produk TWS dari 45 brand menggunakan perhitungan cosine similarity.
               </p>
             </FadeIn>
 
             <FadeIn delay={0.4}>
-              <div className="mt-7 flex flex-wrap items-center gap-3">
+              <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
                   href="/recommend"
-                  className="group inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white shadow-lg transition-all hover:gap-3 hover:opacity-90"
-                  style={{ background: "var(--primary)" }}
+                  className="group relative inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:gap-3 hover:shadow-xl active:scale-[0.97]"
+                  style={{ background: "var(--primary)", boxShadow: "0 8px 25px color-mix(in srgb, var(--primary) 30%, transparent)" }}
                 >
                   Mulai Rekomendasi
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </Link>
                 <Link
                   href="#cara-kerja"
-                  className="group inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-medium backdrop-blur-sm transition-all hover:border-[var(--primary)]"
-                  style={{ borderColor: "var(--border)", color: "var(--foreground)", background: "color-mix(in srgb, var(--surface) 80%, transparent)" }}
+                  className="inline-flex items-center gap-2 rounded-full border px-7 py-3.5 text-sm font-medium transition-all hover:bg-[var(--muted-bg)] active:scale-[0.97]"
+                  style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
                 >
-                  <span className="underline decoration-2 underline-offset-4" style={{ textDecorationColor: "color-mix(in srgb, var(--primary) 50%, transparent)" }}>
-                    Pelajari Cara Kerja
-                  </span>
+                  Cara Kerja
                 </Link>
               </div>
             </FadeIn>
 
-            <FadeIn delay={0.5}>
-              <div className="mt-7 flex items-center gap-6 pt-5" style={{ borderTop: "1px solid var(--border)" }}>
-                <div>
-                  <p className="font-display text-2xl" style={{ color: "var(--foreground)" }}>
-                    <AnimatedCounter value={100} />
-                    <span style={{ color: "var(--primary)" }}>+</span>
-                  </p>
-                  <p className="mt-0.5 text-xs" style={{ color: "var(--muted)" }}>Produk TWS</p>
-                </div>
-                <div className="h-8 w-px" style={{ background: "var(--border)" }} />
-                <div>
-                  <p className="font-display text-2xl" style={{ color: "var(--foreground)" }}>
-                    Top <span style={{ color: "var(--primary)" }}><AnimatedCounter value={3} duration={900} /></span>
-                  </p>
-                  <p className="mt-0.5 text-xs" style={{ color: "var(--muted)" }}>Rekomendasi</p>
-                </div>
-                <div className="h-8 w-px" style={{ background: "var(--border)" }} />
-                <div>
-                  <p className="font-display text-2xl" style={{ color: "var(--primary)" }}>
-                    <AnimatedCounter value={7} duration={900} />
-                  </p>
-                  <p className="mt-0.5 text-xs" style={{ color: "var(--muted)" }}>Parameter</p>
-                </div>
+            {/* Stats */}
+            <FadeIn delay={0.55}>
+              <div className="mt-10 flex items-center gap-8 pt-6" style={{ borderTop: "1px solid var(--border-light)" }}>
+                {[
+                  { value: 141, suffix: "", label: "Produk" },
+                  { value: 45, suffix: "", label: "Brand" },
+                  { value: 7, suffix: "", label: "Parameter" },
+                ].map((s, i) => (
+                  <div key={i}>
+                    <p className="font-display text-xl tabular-nums" style={{ color: "var(--foreground)" }}>
+                      <AnimatedCounter value={s.value} />
+                      {s.suffix}
+                    </p>
+                    <p className="text-[11px] mt-0.5" style={{ color: "var(--text-subtle)" }}>{s.label}</p>
+                  </div>
+                ))}
               </div>
             </FadeIn>
           </div>
 
-          {/* Right — Hero Card */}
-          <FadeIn delay={0.3} y={20}>
-            <div className="relative flex items-center justify-center">
-              <div className="relative w-full max-w-md rounded-3xl border p-6" style={{ borderColor: "color-mix(in srgb, var(--border) 70%, transparent)", background: "var(--surface)", boxShadow: "var(--card-shadow-hover)" }}>
-                <div className="mb-5 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xs font-medium" style={{ color: "var(--muted)" }}>Hasil rekomendasi</span>
+          {/* Right — Glass card preview */}
+          <FadeIn delay={0.35} y={20}>
+            <div className="relative">
+              {/* Glow behind card */}
+              <div className="absolute -inset-4 rounded-3xl opacity-50 blur-2xl pointer-events-none" style={{ background: "linear-gradient(135deg, color-mix(in srgb, var(--primary) 20%, transparent), transparent)" }} />
+              <div className="relative glass rounded-3xl p-6 shadow-xl" style={{ boxShadow: "var(--card-shadow-hover)" }}>
+                {/* Header */}
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: "var(--primary)" }}>
+                      <Headphones className="h-4 w-4 text-white" strokeWidth={1.75} />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-subtle)" }}>Rekomendasi</p>
+                      <p className="text-xs font-medium" style={{ color: "var(--foreground)" }}>Top 3 Match</p>
+                    </div>
                   </div>
-                  <span className="rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider" style={{ background: "color-mix(in srgb, var(--primary) 10%, transparent)", color: "var(--primary)" }}>Top 3</span>
+                  <span className="rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider" style={{ background: "color-mix(in srgb, var(--primary) 12%, transparent)", color: "var(--primary)" }}>
+                    Live
+                  </span>
                 </div>
 
+                {/* Results */}
                 <ul className="space-y-2.5">
                   {sampleResults.map((p, i) => (
-                    <FadeIn key={p.name} delay={0.6 + i * 0.12} y={0}>
+                    <FadeIn key={p.name} delay={0.5 + i * 0.1} y={0}>
                       <li
-                        className="flex items-center gap-3 rounded-2xl border p-3 transition-all hover:shadow-md active:scale-[0.98]"
+                        className="flex items-center gap-3 rounded-2xl border p-3.5 transition-all hover:shadow-md active:scale-[0.98] cursor-default"
                         style={{
-                          borderColor: i === 0 ? "color-mix(in srgb, var(--primary) 30%, transparent)" : "var(--border)",
-                          background: "var(--surface)",
-                          boxShadow: i === 0 ? "0 0 0 3px color-mix(in srgb, var(--primary) 8%, transparent)" : "none",
+                          borderColor: i === 0 ? "color-mix(in srgb, var(--primary) 25%, transparent)" : "var(--border-light)",
+                          background: i === 0 ? "color-mix(in srgb, var(--primary) 4%, var(--surface))" : "var(--surface)",
                         }}
                       >
                         <span
-                          className="flex h-10 w-10 flex-none items-center justify-center rounded-xl"
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold"
                           style={{
-                            background: i === 0 ? "var(--primary)" : "color-mix(in srgb, var(--primary) 10%, transparent)",
-                            color: i === 0 ? "white" : "var(--primary)",
+                            background: i === 0 ? "var(--primary)" : "var(--muted-bg)",
+                            color: i === 0 ? "white" : "var(--muted)",
                           }}
                         >
-                          <Headphones className="h-4 w-4" strokeWidth={1.75} />
+                          {i + 1}
                         </span>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium" style={{ color: "var(--foreground)" }}>{p.name}</p>
-                          <p className="truncate text-xs" style={{ color: "var(--muted)" }}>{p.tag}</p>
+                          <p className="truncate text-sm font-semibold" style={{ color: "var(--foreground)" }}>{p.name}</p>
+                          <p className="truncate text-[11px] mt-0.5" style={{ color: "var(--muted)" }}>{p.tag}</p>
                         </div>
-                        <span className="font-display text-sm" style={{ color: "var(--muted)" }}>0{i + 1}</span>
+                        <ScoreBadge score={p.score} />
                       </li>
                     </FadeIn>
                   ))}
                 </ul>
 
-                <div className="mt-5 flex items-center justify-between pt-4" style={{ borderTop: "1px solid var(--border)" }}>
-                  <p className="text-[11px]" style={{ color: "var(--muted)" }}>Disesuaikan dengan preferensi</p>
-                  <span className="text-[11px] font-medium" style={{ color: "var(--primary)" }}>Berdasarkan kemiripan</span>
+                {/* Footer */}
+                <div className="mt-4 pt-3 flex items-center justify-between text-[10px]" style={{ borderTop: "1px solid var(--border-light)", color: "var(--text-subtle)" }}>
+                  <span>Berdasarkan cosine similarity</span>
+                  <span className="font-medium" style={{ color: "var(--primary)" }}>Lihat semua →</span>
                 </div>
               </div>
             </div>
@@ -233,32 +264,30 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CRITERIA */}
-      <section className="relative overflow-hidden py-24 md:py-28" style={{ background: "var(--foreground)" }}>
-        <div className="absolute -top-40 left-1/2 h-72 w-[40rem] -translate-x-1/2 rounded-full blur-2xl pointer-events-none" style={{ background: "var(--primary)", opacity: 0.1 }} />
-        <div className="relative mx-auto max-w-6xl px-6">
-          <div className="mb-12 max-w-2xl">
-            <FadeIn>
-              <h2 className="font-display text-[1.85rem] leading-tight md:text-[2.25rem]" style={{ color: "var(--background)" }}>
-                Empat kriteria utama dalam penilaian rekomendasi.
-              </h2>
-            </FadeIn>
-            <FadeIn delay={0.1}>
-              <p className="mt-3 text-sm leading-7" style={{ color: "color-mix(in srgb, var(--background) 50%, transparent)" }}>
-                Setiap preferensi dibandingkan dengan spesifikasi tiap produk untuk menyusun rekomendasi yang relevan.
-              </p>
-            </FadeIn>
-          </div>
+      {/* ═══ CRITERIA ═══ */}
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "var(--foreground)" }} />
+        <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, var(--primary), transparent)", opacity: 0.3 }} />
 
-          <div className="grid gap-px overflow-hidden rounded-2xl border sm:grid-cols-2 lg:grid-cols-4" style={{ borderColor: "color-mix(in srgb, var(--background) 10%, transparent)", background: "color-mix(in srgb, var(--background) 5%, transparent)" }}>
+        <div className="relative mx-auto max-w-6xl px-6">
+          <FadeIn>
+            <div className="mb-14 max-w-2xl">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-3" style={{ color: "var(--primary)" }}>Kriteria Rekomendasi</p>
+              <h2 className="font-display text-[clamp(1.5rem,3.5vw,2.25rem)] leading-tight" style={{ color: "var(--background)" }}>
+                Empat aspek yang dianalisis<br />untuk setiap produk.
+              </h2>
+            </div>
+          </FadeIn>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {criteria.map((item, i) => (
-              <FadeIn key={item.title} delay={i * 0.1}>
-                <div className="group relative p-6 transition-colors hover:opacity-90" style={{ background: "var(--foreground)" }}>
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl transition-transform group-hover:scale-110" style={{ border: "1px solid color-mix(in srgb, var(--primary) 30%, transparent)", background: "color-mix(in srgb, var(--primary) 15%, transparent)", color: "var(--primary)" }}>
-                    <item.icon className="h-5 w-5" strokeWidth={1.5} />
+              <FadeIn key={item.title} delay={i * 0.08}>
+                <div className="group relative rounded-2xl p-6 transition-all hover:-translate-y-1" style={{ background: "color-mix(in srgb, var(--background) 5%, var(--foreground))", border: "1px solid color-mix(in srgb, var(--background) 8%, transparent)" }}>
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl mb-4 transition-transform group-hover:scale-110" style={{ background: "color-mix(in srgb, var(--primary) 15%, transparent)" }}>
+                    <item.icon className="h-5 w-5" style={{ color: "var(--primary)" }} strokeWidth={1.5} />
                   </div>
-                  <h3 className="mt-5 text-base font-semibold" style={{ color: "var(--background)" }}>{item.title}</h3>
-                  <p className="mt-2 text-sm leading-6" style={{ color: "color-mix(in srgb, var(--background) 50%, transparent)" }}>{item.desc}</p>
+                  <h3 className="text-[15px] font-semibold mb-1.5" style={{ color: "var(--background)" }}>{item.title}</h3>
+                  <p className="text-[13px] leading-relaxed" style={{ color: "color-mix(in srgb, var(--background) 45%, transparent)" }}>{item.desc}</p>
                 </div>
               </FadeIn>
             ))}
@@ -266,35 +295,33 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* STEPS */}
-      <section id="cara-kerja" className="relative py-24 md:py-28">
+      {/* ═══ STEPS ═══ */}
+      <section id="cara-kerja" className="relative py-24 md:py-32">
+        <div className="absolute inset-0 grid-pattern opacity-20 pointer-events-none" />
         <div className="relative mx-auto max-w-6xl px-6">
-          <div className="mb-10 max-w-2xl">
-            <FadeIn>
-              <h2 className="font-display text-[1.85rem] md:text-[2.25rem]" style={{ color: "var(--foreground)" }}>
-                Tiga langkah menuju rekomendasi terbaik.
+          <FadeIn>
+            <div className="mb-14 max-w-2xl">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-3" style={{ color: "var(--primary)" }}>Alur Kerja</p>
+              <h2 className="font-display text-[clamp(1.5rem,3.5vw,2.25rem)] leading-tight" style={{ color: "var(--foreground)" }}>
+                Tiga langkah menuju<br />rekomendasi terbaik.
               </h2>
-            </FadeIn>
-            <FadeIn delay={0.1}>
-              <p className="mt-3 text-sm leading-7" style={{ color: "var(--muted)" }}>Alur kerja sistem dari input preferensi hingga hasil rekomendasi.</p>
-            </FadeIn>
-          </div>
+            </div>
+          </FadeIn>
 
           <div className="grid gap-6 md:grid-cols-3">
             {steps.map((item, i) => (
-              <FadeIn key={item.number} delay={i * 0.12}>
-                <div className="relative">
-                  {i < steps.length - 1 && (
-                    <div className="absolute top-10 left-full z-10 hidden w-6 md:block" style={{ borderTop: "2px dashed color-mix(in srgb, var(--primary) 30%, transparent)" }} />
-                  )}
-                  <div className="group h-full rounded-2xl border p-7 transition-all hover:-translate-y-1 hover:shadow-lg" style={{ borderColor: "var(--border)", background: "var(--surface)", boxShadow: "var(--card-shadow)" }}>
-                    <div className="flex items-center gap-3">
-                      <span className="font-display text-4xl font-semibold transition-colors group-hover:opacity-80" style={{ color: "var(--primary)" }}>{item.number}</span>
-                      <span className="h-px flex-1" style={{ background: `linear-gradient(to right, var(--primary), transparent)` }} />
+              <FadeIn key={item.number} delay={i * 0.1}>
+                <div className="group relative rounded-2xl p-7 transition-all hover:-translate-y-1" style={{ background: "var(--surface)", border: "1px solid var(--border)", boxShadow: "var(--card-shadow)" }}>
+                  {/* Step number */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="font-display text-3xl font-bold" style={{ color: "var(--primary)" }}>{item.number}</span>
+                    <div className="h-px flex-1" style={{ background: "linear-gradient(to right, color-mix(in srgb, var(--primary) 30%, transparent), transparent)" }} />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors" style={{ background: "color-mix(in srgb, var(--primary) 8%, transparent)" }}>
+                      <item.icon className="h-4 w-4" style={{ color: "var(--primary)" }} strokeWidth={1.5} />
                     </div>
-                    <h3 className="font-display mt-4 text-xl" style={{ color: "var(--foreground)" }}>{item.title}</h3>
-                    <p className="mt-2 text-sm leading-6" style={{ color: "var(--muted)" }}>{item.desc}</p>
                   </div>
+                  <h3 className="text-[15px] font-semibold mb-2" style={{ color: "var(--foreground)" }}>{item.title}</h3>
+                  <p className="text-[13px] leading-relaxed" style={{ color: "var(--muted)" }}>{item.desc}</p>
                 </div>
               </FadeIn>
             ))}
@@ -302,32 +329,35 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="mx-auto max-w-6xl px-6 pt-8 pb-24 md:pb-28">
+      {/* ═══ CTA ═══ */}
+      <section className="mx-auto max-w-6xl px-6 pb-24 md:pb-32">
         <FadeIn>
-          <div className="relative overflow-hidden rounded-2xl px-8 py-14 md:px-14 md:py-16" style={{ background: "var(--foreground)" }}>
-            <div className="absolute -top-32 left-1/2 h-64 w-[36rem] -translate-x-1/2 rounded-full blur-2xl pointer-events-none" style={{ background: "var(--primary)", opacity: 0.15 }} />
-            <div className="relative z-10 flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
-              <div className="max-w-xl">
-                <h2 className="font-display text-[1.85rem] leading-tight md:text-[2.25rem]" style={{ color: "var(--background)" }}>
-                  Siap menemukan TWS yang tepat?
+          <div className="relative overflow-hidden rounded-3xl p-10 md:p-14" style={{ background: "var(--foreground)" }}>
+            {/* Decorative blobs */}
+            <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full opacity-20 pointer-events-none" style={{ background: "var(--primary)", filter: "blur(60px)" }} />
+            <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full opacity-10 pointer-events-none" style={{ background: "#ec4899", filter: "blur(50px)" }} />
+
+            <div className="relative z-10 flex flex-col items-start gap-8 md:flex-row md:items-end md:justify-between">
+              <div className="max-w-lg">
+                <h2 className="font-display text-[clamp(1.5rem,3.5vw,2rem)] leading-tight" style={{ color: "var(--background)" }}>
+                  Siap menemukan TWS<br />yang tepat?
                 </h2>
-                <p className="mt-3 text-sm leading-7" style={{ color: "color-mix(in srgb, var(--background) 50%, transparent)" }}>
-                  Tetapkan preferensi Anda untuk menerima rekomendasi yang sesuai dengan kebutuhan.
+                <p className="mt-3 text-[14px] leading-relaxed" style={{ color: "color-mix(in srgb, var(--background) 50%, transparent)" }}>
+                  Masukkan preferensi Anda, dapatkan rekomendasi dalam hitungan detik.
                 </p>
               </div>
-              <div className="flex flex-shrink-0 flex-wrap items-center gap-3 md:flex-nowrap">
+              <div className="flex items-center gap-3">
                 <Link
                   href="/recommend"
-                  className="group inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-all hover:gap-3"
+                  className="group inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold transition-all hover:gap-3 active:scale-[0.97]"
                   style={{ background: "var(--background)", color: "var(--foreground)" }}
                 >
-                  Mulai Rekomendasi
+                  Mulai Sekarang
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </Link>
                 <Link
                   href="/product"
-                  className="inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-medium transition-colors"
+                  className="inline-flex items-center gap-2 rounded-full border px-7 py-3.5 text-sm font-medium transition-colors hover:opacity-80 active:scale-[0.97]"
                   style={{ borderColor: "color-mix(in srgb, var(--background) 15%, transparent)", color: "var(--background)" }}
                 >
                   Lihat Katalog

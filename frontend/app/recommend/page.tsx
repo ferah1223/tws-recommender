@@ -84,11 +84,11 @@ export default function RecommendPage() {
   };
 
   return (
-    <main className="font-body relative min-h-screen bg-white text-slate-900">
-      {/* ── HERO ── */}
-      <section className="relative grid-pattern overflow-hidden border-b border-slate-100">
-        <div className="absolute inset-0 bg-linear-to-br from-white via-white/95 to-violet-50/80 pointer-events-none" />
-        <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full bg-violet-200/30 blur-3xl pointer-events-none" />
+    <main className="font-body relative min-h-screen" style={{ background: "var(--background)", color: "var(--foreground)" }}>
+      {/* HERO */}
+      <section className="relative grid-pattern overflow-hidden" style={{ borderBottom: "1px solid var(--border)" }}>
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(135deg, var(--background), color-mix(in srgb, var(--primary) 3%, var(--background)))" }} />
+        <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full blur-3xl pointer-events-none opacity-30" style={{ background: "var(--primary)" }} />
 
         <div className="relative mx-auto max-w-6xl px-6 py-10 lg:px-10 lg:py-12">
           <motion.div
@@ -102,26 +102,29 @@ export default function RecommendPage() {
           >
             <motion.div
               variants={fadeUp}
-              className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-700 backdrop-blur-sm"
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em]"
+              style={{ border: "1px solid color-mix(in srgb, var(--primary) 20%, transparent)", background: "color-mix(in srgb, var(--primary) 5%, var(--surface))", color: "var(--primary)" }}
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-violet-500 animate-pulse" />
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60" style={{ background: "var(--primary)" }} />
+                <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: "var(--primary)" }} />
+              </span>
               Halaman Rekomendasi
             </motion.div>
 
             <motion.h1
               variants={fadeUp}
-              className="font-display mt-5 text-[2rem] leading-[1.1] text-slate-950 md:text-[2.5rem]"
+              className="font-display mt-5 text-[clamp(1.5rem,3.5vw,2.5rem)] leading-[1.1]"
+              style={{ color: "var(--foreground)" }}
             >
               Temukan TWS yang tepat{" "}
-              <span className="bg-linear-to-r from-violet-600 via-violet-500 to-purple-600 bg-clip-text text-transparent">
-                untuk Anda
-              </span>
-              .
+              <span className="gradient-text">untuk Anda.</span>
             </motion.h1>
 
             <motion.p
               variants={fadeUp}
-              className="mt-4 max-w-xl text-[15px] leading-7 text-slate-600"
+              className="mt-4 max-w-xl text-[15px] leading-7"
+              style={{ color: "var(--muted)" }}
             >
               Isi preferensi sesuai kebutuhan Anda, lalu sistem akan
               menganalisis dan menampilkan rekomendasi TWS terbaik berdasarkan
@@ -139,19 +142,16 @@ export default function RecommendPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] as const }}
-            className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_8px_24px_-12px_rgba(124,58,237,0.15)]"
+            className="rounded-2xl border p-6"
+            style={{ borderColor: "var(--border)", background: "var(--surface)", boxShadow: "var(--card-shadow)" }}
           >
             <div className="flex items-start gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ background: "color-mix(in srgb, var(--primary) 10%, transparent)", color: "var(--primary)" }}>
                 <SlidersHorizontal className="h-5 w-5" strokeWidth={1.75} />
               </div>
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-violet-700">
-                  Langkah 1
-                </p>
-                <h2 className="font-display mt-1 text-lg text-slate-950">
-                  Input Preferensi
-                </h2>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--primary)" }}>Langkah 1</p>
+                <h2 className="font-display mt-1 text-lg" style={{ color: "var(--foreground)" }}>Input Preferensi</h2>
               </div>
             </div>
 
@@ -167,20 +167,20 @@ export default function RecommendPage() {
             transition={{ duration: 0.55, delay: 0.2, ease: [0.22, 1, 0.36, 1] as const }}
             className="space-y-4"
           >
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_8px_24px_-12px_rgba(124,58,237,0.15)]">
+            <div className="rounded-2xl border p-6" style={{ borderColor: "var(--border)", background: "var(--surface)", boxShadow: "var(--card-shadow)" }}>
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ background: "color-mix(in srgb, var(--primary) 10%, transparent)", color: "var(--primary)" }}>
                     <AudioWaveform className="h-5 w-5" strokeWidth={1.75} />
                   </div>
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-violet-700">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--primary)" }}>
                       Langkah 2
                     </p>
-                    <h2 className="font-display mt-1 text-lg text-slate-950">
+                    <h2 className="font-display mt-1 text-lg" style={{ color: "var(--foreground)" }}>
                       Hasil Rekomendasi
                     </h2>
-                    <p className="mt-1 text-sm leading-6 text-slate-500">
+                    <p className="mt-1 text-sm leading-6" style={{ color: "var(--muted)" }}>
                       Menampilkan produk TWS terbaik berdasarkan preferensi
                       yang dimasukkan.
                     </p>
@@ -188,7 +188,7 @@ export default function RecommendPage() {
                 </div>
 
                 {!loading && recommendations.length > 0 && (
-                  <span className="rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-xs font-semibold text-violet-700">
+                  <span className="rounded-full px-4 py-2 text-xs font-semibold" style={{ background: "color-mix(in srgb, var(--primary) 10%, transparent)", color: "var(--primary)", border: "1px solid color-mix(in srgb, var(--primary) 20%, transparent)" }}>
                     {recommendations.length} produk ditampilkan
                   </span>
                 )}
@@ -196,36 +196,31 @@ export default function RecommendPage() {
             </div>
 
             {loading && (
-              <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-[0_8px_24px_-12px_rgba(124,58,237,0.15)]">
-                <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-violet-600" />
-                <p className="font-display text-base text-slate-950">
-                  Sedang memproses rekomendasi…
-                </p>
-                <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Sistem sedang menghitung produk yang paling sesuai dengan
-                  preferensi Anda.
-                </p>
+              <div className="rounded-2xl border p-10 text-center" style={{ borderColor: "var(--border)", background: "var(--surface)", boxShadow: "var(--card-shadow)" }}>
+                <div className="mx-auto mb-4 h-10 w-10 skeleton rounded-full" />
+                <div className="mx-auto h-4 w-48 skeleton mb-2" />
+                <div className="mx-auto h-3 w-64 skeleton" />
               </div>
             )}
 
             {error && (
-              <div className="rounded-2xl border border-red-200 bg-red-50 p-5">
-                <h3 className="font-display text-base text-red-700">
+              <div className="rounded-2xl border p-5" style={{ borderColor: "color-mix(in srgb, #ef4444 30%, transparent)", background: "color-mix(in srgb, #ef4444 5%, var(--surface))" }}>
+                <h3 className="font-display text-base" style={{ color: "#ef4444" }}>
                   Terjadi Kesalahan
                 </h3>
-                <p className="mt-1 text-sm leading-6 text-red-600">{error}</p>
+                <p className="mt-1 text-sm leading-6" style={{ color: "color-mix(in srgb, #ef4444 80%, var(--foreground))" }}>{error}</p>
               </div>
             )}
 
             {!loading && !error && recommendations.length === 0 && (
-              <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+              <div className="rounded-2xl border p-10 text-center" style={{ borderColor: "var(--border)", borderStyle: "dashed", background: "var(--surface)" }}>
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl" style={{ background: "color-mix(in srgb, var(--primary) 8%, transparent)", color: "var(--primary)" }}>
                   <ChevronRight className="h-6 w-6" strokeWidth={1.75} />
                 </div>
-                <h3 className="font-display mt-4 text-lg text-slate-950">
+                <h3 className="font-display mt-4 text-lg" style={{ color: "var(--foreground)" }}>
                   Belum ada rekomendasi
                 </h3>
-                <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+                <p className="mx-auto mt-2 max-w-md text-sm leading-6" style={{ color: "var(--muted)" }}>
                   Silakan isi form preferensi terlebih dahulu untuk melihat
                   hasil rekomendasi TWS yang paling sesuai.
                 </p>
