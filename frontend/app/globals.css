@@ -34,7 +34,6 @@ body {
   scroll-margin-top: 80px;
 }
 
-/* Global focus-visible states — accessibility + polish */
 *:focus {
   outline: none;
 }
@@ -50,15 +49,17 @@ textarea:focus-visible {
   border-radius: 8px;
 }
 
-/* Respect users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  /* Ensure all motion-hidden elements are visible */
+  [style*="opacity: 0"] {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 
@@ -88,4 +89,11 @@ a {
 .card-hover:hover {
   transform: translateY(-6px);
   box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12);
+}
+
+/* Failsafe: if JS hasn't run yet, show content anyway */
+.no-js [data-framer-motion],
+.no-js .motion-ensure-visible {
+  opacity: 1 !important;
+  transform: none !important;
 }
