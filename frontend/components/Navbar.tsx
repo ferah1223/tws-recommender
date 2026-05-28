@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Headphones, ArrowUpRight, Menu, X } from "lucide-react";
+import { Headphones, ArrowUpRight, Menu, X, Moon, Sun } from "lucide-react";
 import { motion } from "framer-motion";
 
 const navItems = [
@@ -12,6 +12,35 @@ const navItems = [
   { href: "/product", label: "Katalog" },
   { href: "/faq", label: "FAQ" },
 ];
+
+function ThemeToggle() {
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    setDark(isDark);
+  }, []);
+
+  const toggle = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
+    localStorage.setItem("theme", next ? "dark" : "light");
+    document.documentElement.classList.add("theme-transition");
+    setTimeout(() => document.documentElement.classList.remove("theme-transition"), 400);
+  };
+
+  return (
+    <button
+      onClick={toggle}
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-all hover:border-[var(--primary)] hover:text-[var(--primary)] hover:shadow-sm"
+    >
+      <Sun className={`h-4 w-4 transition-all duration-300 ${dark ? "rotate-90 scale-0" : "rotate-0 scale-100"}`} strokeWidth={1.75} />
+      <Moon className={`absolute h-4 w-4 transition-all duration-300 ${dark ? "rotate-0 scale-100" : "-rotate-90 scale-0"}`} strokeWidth={1.75} />
+    </button>
+  );
+}
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -31,17 +60,17 @@ export default function Navbar() {
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "border-b border-slate-200/80 bg-white/90 shadow-[0_4px_20px_-12px_rgba(15,23,42,0.12)] backdrop-blur-md"
-          : "border-b border-transparent bg-white/80"
+          ? "border-b border-[var(--border)] bg-[color-mix(in srgb, var(--background) 90%, transparent)] backdrop-blur-xl shadow-sm"
+          : "border-b border-transparent bg-[color-mix(in srgb, var(--background) 80%, transparent)]"
       }`}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-950 text-white shadow-sm transition-all group-hover:bg-violet-700 group-hover:shadow-md group-hover:shadow-violet-200">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--foreground)] text-[var(--background)] shadow-sm transition-all group-hover:bg-[var(--primary)] group-hover:shadow-md">
             <Headphones className="h-4 w-4" strokeWidth={1.75} />
           </div>
-          <p className="text-[15px] font-semibold tracking-tight text-slate-900">
+          <p className="text-[15px] font-semibold tracking-tight text-[var(--foreground)]">
             TWS Recommender
           </p>
         </Link>
@@ -56,8 +85,8 @@ export default function Navbar() {
                 href={item.href}
                 className={`relative rounded-full px-4 py-2 text-sm transition-colors ${
                   isActive
-                    ? "font-semibold text-violet-700"
-                    : "font-medium text-slate-500 hover:text-slate-900"
+                    ? "font-semibold text-[var(--primary)]"
+                    : "font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
                 }`}
               >
                 <span className="relative z-10">{item.label}</span>
@@ -65,34 +94,38 @@ export default function Navbar() {
                   <motion.span
                     layoutId="nav-active-pill"
                     transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                    className="absolute inset-0 -z-0 rounded-full bg-violet-50"
+                    className="absolute inset-0 -z-0 rounded-full bg-[color-mix(in srgb, var(--primary) 10%, transparent)]"
                   />
                 )}
                 {isActive && (
                   <motion.span
                     layoutId="nav-active-underline"
                     transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                    className="absolute inset-x-4 -bottom-1 h-0.5 rounded-full bg-violet-600"
+                    className="absolute inset-x-4 -bottom-1 h-0.5 rounded-full bg-[var(--primary)]"
                   />
                 )}
               </Link>
             );
           })}
 
-          <Link
-            href="/recommend"
-            className="group ml-3 inline-flex items-center gap-1.5 rounded-full bg-slate-950 px-4 py-2 text-[13px] font-medium text-white shadow-sm ring-1 ring-slate-950/10 transition-all hover:bg-violet-700 hover:gap-2.5 hover:shadow-md hover:shadow-violet-200/60 hover:ring-violet-700/20"
-          >
-            Mulai
-            <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </Link>
+          <div className="ml-2 flex items-center gap-2">
+            <ThemeToggle />
+            <Link
+              href="/recommend"
+              className="group inline-flex items-center gap-1.5 rounded-full bg-[var(--foreground)] px-4 py-2 text-[13px] font-medium text-[var(--background)] shadow-sm transition-all hover:gap-2.5 hover:shadow-md"
+            >
+              Mulai
+              <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </Link>
+          </div>
         </nav>
 
         {/* Mobile actions */}
         <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
           <Link
             href="/recommend"
-            className="inline-flex items-center gap-1.5 rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-700"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--foreground)] px-4 py-2 text-sm font-medium text-[var(--background)] transition hover:opacity-90"
           >
             Mulai
             <ArrowUpRight className="h-3.5 w-3.5" />
@@ -102,7 +135,7 @@ export default function Navbar() {
             aria-label={open ? "Tutup menu" : "Buka menu"}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-violet-300 hover:text-violet-700"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
           >
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
@@ -111,7 +144,7 @@ export default function Navbar() {
 
       {/* Mobile menu panel */}
       <div
-        className={`md:hidden overflow-hidden border-t border-slate-100 bg-white/95 backdrop-blur-xl transition-[max-height,opacity] duration-300 ease-out ${
+        className={`md:hidden overflow-hidden border-t border-[var(--border)] bg-[color-mix(in srgb, var(--background) 95%, transparent)] backdrop-blur-xl transition-[max-height,opacity] duration-300 ease-out ${
           open ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
@@ -125,12 +158,12 @@ export default function Navbar() {
                 onClick={closeMenu}
                 className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm transition ${
                   isActive
-                    ? "bg-violet-50 font-semibold text-violet-700"
-                    : "font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    ? "bg-[color-mix(in srgb, var(--primary) 10%, transparent)] font-semibold text-[var(--primary)]"
+                    : "font-medium text-[var(--muted)] hover:bg-[var(--muted-bg)] hover:text-[var(--foreground)]"
                 }`}
               >
                 {item.label}
-                {isActive && <span className="h-1.5 w-1.5 rounded-full bg-violet-600" />}
+                {isActive && <span className="h-1.5 w-1.5 rounded-full bg-[var(--primary)]" />}
               </Link>
             );
           })}

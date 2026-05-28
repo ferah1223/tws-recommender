@@ -11,6 +11,8 @@ import {
   Bluetooth,
   ArrowUpRight,
   Loader2,
+  Minus,
+  Plus,
 } from "lucide-react";
 
 type PreferenceFormProps = {
@@ -26,41 +28,37 @@ type PreferenceFormProps = {
   loading?: boolean;
 };
 
-const sectionClass = "rounded-2xl border border-slate-100 bg-white p-4 shadow-sm";
+const sectionClass = "rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm";
 
 const SectionHeader = ({
   icon: Icon,
   iconBg,
-  iconColor,
   title,
   subtitle,
 }: {
   icon: React.ElementType;
   iconBg: string;
-  iconColor: string;
   title: string;
   subtitle: string;
 }) => (
   <div className="mb-3.5 flex items-center gap-3">
     <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${iconBg}`}>
-      <Icon className={`h-4 w-4 ${iconColor}`} strokeWidth={1.5} />
+      <Icon className="h-4 w-4 text-[var(--primary)]" strokeWidth={1.5} />
     </div>
     <div>
-      <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
-      <p className="text-[11px] text-slate-400">{subtitle}</p>
+      <h3 className="text-sm font-semibold text-[var(--foreground)]">{title}</h3>
+      <p className="text-[11px] text-[var(--muted)]">{subtitle}</p>
     </div>
   </div>
 );
 
 const OptionButton = ({
   isActive,
-  activeClass,
   onClick,
   label,
   desc,
 }: {
   isActive: boolean;
-  activeClass: string;
   onClick: () => void;
   label: string;
   desc?: string;
@@ -68,10 +66,10 @@ const OptionButton = ({
   <button
     type="button"
     onClick={onClick}
-    className={`rounded-xl border px-3 py-2.5 text-left text-sm transition-all ${
+    className={`rounded-xl border px-3 py-2.5 text-left text-sm transition-all active:scale-[0.97] ${
       isActive
-        ? activeClass
-        : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+        ? "border-[var(--primary)] bg-[color-mix(in srgb, var(--primary) 10%, transparent)] text-[var(--primary)] font-medium shadow-sm"
+        : "border-[var(--border)] text-[var(--muted)] hover:border-[color-mix(in srgb, var(--primary) 30%, transparent)] hover:bg-[var(--muted-bg)]"
     }`}
   >
     <div className="text-center font-medium">{label}</div>
@@ -103,26 +101,25 @@ export default function PreferenceForm({ onSubmit, loading = false }: Preference
 
   const BUDGET_MIN = 100000;
   const BUDGET_MAX = 7000000;
+  const BUDGET_STEP = 100000;
   const budgetPercent = ((budget - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN)) * 100;
 
   const getBudgetCategory = (value: number) => {
-    if (value <= 500000) return { label: "Budget", color: "text-emerald-600" };
-    if (value <= 1500000) return { label: "Menengah", color: "text-blue-600" };
-    if (value <= 3000000) return { label: "Premium", color: "text-violet-600" };
-    if (value <= 5000000) return { label: "High-end", color: "text-fuchsia-600" };
-    return { label: "Flagship", color: "text-amber-600" };
+    if (value <= 500000) return { label: "Budget", color: "text-emerald-600 dark:text-emerald-400" };
+    if (value <= 1500000) return { label: "Menengah", color: "text-blue-600 dark:text-blue-400" };
+    if (value <= 3000000) return { label: "Premium", color: "text-violet-600 dark:text-violet-400" };
+    if (value <= 5000000) return { label: "High-end", color: "text-fuchsia-600 dark:text-fuchsia-400" };
+    return { label: "Flagship", color: "text-amber-600 dark:text-amber-400" };
   };
   const budgetCategory = getBudgetCategory(budget);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-
       {/* Karakter Suara */}
       <div className={sectionClass}>
         <SectionHeader
           icon={Music}
-          iconBg="bg-violet-100"
-          iconColor="text-violet-600"
+          iconBg="bg-[color-mix(in srgb, var(--primary) 10%, transparent)]"
           title="Karakter Suara"
           subtitle="Pilih preferensi suara Anda"
         />
@@ -135,7 +132,6 @@ export default function PreferenceForm({ onSubmit, loading = false }: Preference
             <OptionButton
               key={item.value}
               isActive={karakterSuara === item.value}
-              activeClass="border-violet-400 bg-violet-50 text-violet-700"
               onClick={() => setKarakterSuara(item.value as "bass" | "treble" | "balance")}
               label={item.label}
               desc={item.desc}
@@ -148,8 +144,7 @@ export default function PreferenceForm({ onSubmit, loading = false }: Preference
       <div className={sectionClass}>
         <SectionHeader
           icon={Battery}
-          iconBg="bg-emerald-100"
-          iconColor="text-emerald-600"
+          iconBg="bg-[color-mix(in srgb, #10b981 10%, transparent)]"
           title="Daya Tahan Baterai"
           subtitle="Minimal durasi pemakaian"
         />
@@ -162,7 +157,6 @@ export default function PreferenceForm({ onSubmit, loading = false }: Preference
             <OptionButton
               key={item.label}
               isActive={minBatteryHours === item.value}
-              activeClass="border-emerald-400 bg-emerald-50 text-emerald-700"
               onClick={() => setMinBatteryHours(item.value)}
               label={item.label}
               desc={item.desc}
@@ -176,8 +170,7 @@ export default function PreferenceForm({ onSubmit, loading = false }: Preference
         <div className={sectionClass}>
           <SectionHeader
             icon={Shield}
-            iconBg="bg-blue-100"
-            iconColor="text-blue-600"
+            iconBg="bg-[color-mix(in srgb, #3b82f6 10%, transparent)]"
             title="Active Noise Cancellation"
             subtitle="Peredam suara bising sekitar"
           />
@@ -186,7 +179,6 @@ export default function PreferenceForm({ onSubmit, loading = false }: Preference
               <OptionButton
                 key={String(item.value)}
                 isActive={anc === item.value}
-                activeClass="border-blue-400 bg-blue-50 text-blue-700"
                 onClick={() => setAnc(item.value)}
                 label={item.label}
               />
@@ -197,8 +189,7 @@ export default function PreferenceForm({ onSubmit, loading = false }: Preference
         <div className={sectionClass}>
           <SectionHeader
             icon={Gamepad2}
-            iconBg="bg-amber-100"
-            iconColor="text-amber-600"
+            iconBg="bg-[color-mix(in srgb, #f59e0b 10%, transparent)]"
             title="Mode Gaming"
             subtitle="Latensi rendah untuk game & video"
           />
@@ -207,7 +198,6 @@ export default function PreferenceForm({ onSubmit, loading = false }: Preference
               <OptionButton
                 key={String(item.value)}
                 isActive={gaming === item.value}
-                activeClass="border-amber-400 bg-amber-50 text-amber-700"
                 onClick={() => setGaming(item.value)}
                 label={item.label}
               />
@@ -219,8 +209,7 @@ export default function PreferenceForm({ onSubmit, loading = false }: Preference
       <div className={sectionClass}>
         <SectionHeader
           icon={Bluetooth}
-          iconBg="bg-fuchsia-100"
-          iconColor="text-fuchsia-600"
+          iconBg="bg-[color-mix(in srgb, #d946ef 10%, transparent)]"
           title="Hi-Res Audio"
           subtitle="Codec berkualitas tinggi (LDAC, aptX, dll.)"
         />
@@ -232,7 +221,6 @@ export default function PreferenceForm({ onSubmit, loading = false }: Preference
             <OptionButton
               key={String(item.value)}
               isActive={hires === item.value}
-              activeClass="border-fuchsia-400 bg-fuchsia-50 text-fuchsia-700"
               onClick={() => setHires(item.value)}
               label={item.label}
               desc={item.desc}
@@ -245,8 +233,7 @@ export default function PreferenceForm({ onSubmit, loading = false }: Preference
       <div className={sectionClass}>
         <SectionHeader
           icon={Droplets}
-          iconBg="bg-cyan-100"
-          iconColor="text-cyan-600"
+          iconBg="bg-[color-mix(in srgb, #06b6d4 10%, transparent)]"
           title="Ketahanan Air"
           subtitle="Tingkat proteksi air & debu"
         />
@@ -259,7 +246,6 @@ export default function PreferenceForm({ onSubmit, loading = false }: Preference
             <OptionButton
               key={item.value}
               isActive={waterResistance === item.value}
-              activeClass="border-cyan-400 bg-cyan-50 text-cyan-700"
               onClick={() => setWaterResistance(item.value as "none" | "basic" | "sport")}
               label={item.label}
               desc={item.desc}
@@ -268,44 +254,64 @@ export default function PreferenceForm({ onSubmit, loading = false }: Preference
         </div>
       </div>
 
-      {/* Budget */}
+      {/* Budget — improved slider with +/- buttons */}
       <div className={sectionClass}>
         <SectionHeader
           icon={Wallet}
-          iconBg="bg-slate-100"
-          iconColor="text-slate-600"
+          iconBg="bg-[var(--muted-bg)]"
           title="Anggaran"
           subtitle="Batas harga maksimal"
         />
 
-        {/* Budget display */}
         <div className="mb-3 flex items-baseline justify-between">
           <span className={`text-xs font-medium ${budgetCategory.color}`}>
             {budgetCategory.label}
           </span>
-          <span className="font-display text-lg font-normal text-slate-900">
+          <span className="font-display text-lg font-normal text-[var(--foreground)]">
             Rp {budget.toLocaleString("id-ID")}
           </span>
         </div>
 
-        {/* Custom slider track */}
-        <div className="relative h-1.5 w-full rounded-full bg-slate-100">
-          <div
-            className="absolute left-0 top-0 h-full rounded-full bg-slate-950 transition-all"
-            style={{ width: `${budgetPercent}%` }}
-          />
-          <input
-            type="range"
-            min={BUDGET_MIN}
-            max={BUDGET_MAX}
-            step={100000}
-            value={budget}
-            onChange={(e) => setBudget(Number(e.target.value))}
-            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-          />
+        {/* Slider + buttons */}
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setBudget(Math.max(BUDGET_MIN, budget - BUDGET_STEP))}
+            disabled={budget <= BUDGET_MIN}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:border-[var(--primary)] hover:text-[var(--primary)] disabled:opacity-30 disabled:cursor-not-allowed active:scale-95"
+          >
+            <Minus className="h-3.5 w-3.5" strokeWidth={2} />
+          </button>
+
+          <div className="relative flex-1 h-6 flex items-center">
+            <div className="absolute inset-x-0 h-1.5 rounded-full bg-[var(--muted-bg)]">
+              <div
+                className="absolute left-0 top-0 h-full rounded-full bg-[var(--primary)] transition-all"
+                style={{ width: `${budgetPercent}%` }}
+              />
+            </div>
+            <input
+              type="range"
+              min={BUDGET_MIN}
+              max={BUDGET_MAX}
+              step={BUDGET_STEP}
+              value={budget}
+              onChange={(e) => setBudget(Number(e.target.value))}
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setBudget(Math.min(BUDGET_MAX, budget + BUDGET_STEP))}
+            disabled={budget >= BUDGET_MAX}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:border-[var(--primary)] hover:text-[var(--primary)] disabled:opacity-30 disabled:cursor-not-allowed active:scale-95"
+          >
+            <Plus className="h-3.5 w-3.5" strokeWidth={2} />
+          </button>
         </div>
 
-        <div className="mt-2 flex justify-between text-[11px] text-slate-400">
+        <div className="mt-2 flex justify-between text-[11px] text-[var(--muted)]">
           <span>Rp 100.000</span>
           <span>Rp 7.000.000</span>
         </div>
@@ -315,7 +321,7 @@ export default function PreferenceForm({ onSubmit, loading = false }: Preference
       <button
         type="submit"
         disabled={loading}
-        className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3.5 text-sm font-semibold text-white transition-all hover:bg-violet-700 hover:gap-3 disabled:cursor-not-allowed disabled:opacity-60"
+        className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--primary)] px-4 py-3.5 text-sm font-semibold text-white transition-all hover:opacity-90 hover:gap-3 disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.98]"
       >
         {loading ? (
           <>

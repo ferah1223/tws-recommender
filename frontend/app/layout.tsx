@@ -19,8 +19,28 @@ const interTight = Inter_Tight({
 });
 
 export const metadata: Metadata = {
-  title: "Sistem Rekomendasi TWS",
-  description: "Sistem rekomendasi TWS berdasarkan preferensi audio pengguna",
+  title: "TWS Recommender — Temukan TWS Sesuai Preferensi Anda",
+  description:
+    "Sistem rekomendasi TWS berbasis Content-Based Filtering. Dapatkan rekomendasi produk True Wireless Stereo yang paling cocok dengan preferensi audio Anda.",
+  keywords: ["TWS", "rekomendasi", "earphone", "Content-Based Filtering", "audio"],
+  openGraph: {
+    title: "TWS Recommender",
+    description:
+      "Sistem rekomendasi TWS berbasis preferensi audio pengguna menggunakan Content-Based Filtering.",
+    url: "https://frontend-sigma-weld-19.vercel.app",
+    siteName: "TWS Recommender",
+    locale: "id_ID",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TWS Recommender",
+    description:
+      "Temukan TWS yang sesuai dengan preferensi audio Anda.",
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -29,8 +49,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${inter.variable} ${interTight.variable}`}>
-      <body className="bg-white text-[#1f1f1f] antialiased">
+    <html lang="id" className={`${inter.variable} ${interTight.variable}`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var t = localStorage.getItem('theme');
+                  if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="antialiased">
         <div className="flex min-h-screen flex-col">
           <Navbar />
           <main className="flex-1">{children}</main>
